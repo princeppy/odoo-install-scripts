@@ -7,3 +7,10 @@ use the launch_script.sh from [/lightsail.aws/launch_script.sh](/lightsail.aws/l
 # run tail to see the launch_script progress
 tail -f /tmp/launchscript.log
 ```
+
+
+```bash
+sudo su
+cd /InstallScript/
+bash /InstallScript/install_odoo.sh
+```

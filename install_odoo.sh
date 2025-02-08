@@ -175,9 +175,9 @@ chown -R $OE_USER:$OE_USER /etc/odoo
 log "Cloning ${OE_USER} ${ODOO_VERSION}..."
 if [ ! -d "${OE_HOME}/odoo-${ODOO_VERSION}" ]; then
     su - ${OE_USER} -c "git clone --depth 1 --branch ${ODOO_VERSION} https://github.com/odoo/odoo ${OE_HOME}/odoo-${ODOO_VERSION}"
-# else
-#     log "Updating existing Odoo installation..."
-#     su - ${OE_USER} -c "cd ${OE_HOME}/odoo-${ODOO_VERSION} && git pull"
+    # else
+    #     log "Updating existing Odoo installation..."
+    #     su - ${OE_USER} -c "cd ${OE_HOME}/odoo-${ODOO_VERSION} && git pull"
 fi
 
 # Setup virtual environment
