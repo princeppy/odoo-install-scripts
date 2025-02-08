@@ -76,14 +76,8 @@ chown ubuntu:ubuntu "$INSTALL_DIR" >> /tmp/launchscript.log
 # Download the script using wget (or curl)
 wget -O "$INSTALL_DIR/install_odoo.sh" "https://raw.githubusercontent.com/princeppy/odoo-install-scripts/main/install_odoo.sh" >> /tmp/launchscript.log
 
-# Alternatively, use curl (if wget is not installed)
-# curl -L "https://raw.githubusercontent.com/princeppy/odoo-install-scripts/main/install_odoo.sh" -o "$INSTALL_DIR/install_odoo.sh"
-
 # Make the script executable
 chmod +x "$INSTALL_DIR/install_odoo.sh"
-
-# (Optional) Run the script
-# sudo bash "$INSTALL_DIR/install_odoo.sh"
 
 # Print success message
 log "✅ Odoo install script downloaded to $INSTALL_DIR and made executable!" >> /tmp/launchscript.log

@@ -25,9 +25,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # Function to display messages
-log() {
-    # # echo -e "${GREEN}[$(date +'%Y-%m-%dT%H:%M:%S%z')]: $1${NC}"
-    
+log() {    
     # Check if the first argument is "-nodate"
     if [[ "$1" == "-nodate" ]]; then
         shift  # Remove the first argument (-nodate)
@@ -94,18 +92,6 @@ dialog --clear --title "Odoo Setup - Powered by Prince" \
     "17.0" "Odoo 17.0" \
     "18.0" "Odoo 18.0" 2>$TEMP_FILE
 
-# # Capture the exit status
-# EXIT_STATUS=$?
-# log "$EXIT_STATUS"
-
-# # If Cancel or ESC is pressed, exit immediately
-# if [[ $EXIT_STATUS -ne 0 ]]; then
-#     tput rmcup
-#     clear
-#     error "❌ Operation canceled. Exiting..."
-#     exit 1
-# fi
-
 ODOO_VERSION=$(<"$TEMP_FILE")
 
 clean_temp
@@ -116,27 +102,16 @@ OE_HOME="/$OE_USER"
 clean_temp
 dialog --title "Odoo Setup - Powered by Prince" --inputbox "${OE_USER} Home Folder" 8 50 "${OE_HOME}" 2>$TEMP_FILE
 OE_HOME=$(<"$TEMP_FILE")
-# OE_HOME_EXT="$OE_HOME/${OE_USER}-server"
 
 clean_temp
 dialog --title "Odoo Setup - Powered by Prince" --inputbox "Odoo Master Password" 8 50 "admin" 2>$TEMP_FILE
 OE_MASTER_PASSWORD=$(<"$TEMP_FILE")
 
-tput rmcup
 clear
 
 log "Odoo User: ${OE_USER}"
 log "Odoo User Home: ${OE_HOME}"
-# log "Odoo Source Code: ${OE_HOME_EXT}"
 log "Odoo version: ${ODOO_VERSION}"
-
-# # Process the selected option
-# case $ODOO_VERSION in
-#     16.0) echo "⛔ Odoo 16.0 ..." ;;
-#     17.0) echo "✅ Odoo 17.0 ..." ;;
-#     18.0) echo "👋 Odoo 18.0 ..." ;;
-#     *) echo "❌ Invalid choice!"; exit 1 ;;
-# esac
 
 if [ -z "$ODOO_VERSION" ]; then
     error "Invalid Odoo Version"
@@ -198,16 +173,23 @@ chown -R $OE_USER:$OE_USER /etc/odoo
 
 # Clone Odoo
 log "Cloning ${OE_USER} ${ODOO_VERSION}..."
-if [ -d "${OE_HOME}/odoo-${ODOO_VERSION}" ]; then
-    log "Updating existing Odoo installation..."
-    su - ${OE_USER} -c "cd ${OE_HOME}/odoo-${ODOO_VERSION} && git pull"
-else
+if [ ! -d "${OE_HOME}/odoo-${ODOO_VERSION}" ]; then
     su - ${OE_USER} -c "git clone --depth 1 --branch ${ODOO_VERSION} https://github.com/odoo/odoo ${OE_HOME}/odoo-${ODOO_VERSION}"
+# else
+#     log "Updating existing Odoo installation..."
+#     su - ${OE_USER} -c "cd ${OE_HOME}/odoo-${ODOO_VERSION} && git pull"
 fi
 
 # Setup virtual environment
-log "Setting up Python virtual environment..."
-su - ${OE_USER} -c "python3 -m venv ${OE_HOME}/odoo-${ODOO_VERSION}-venv"
+# log "Setting up Python virtual environment..."
+# su - ${OE_USER} -c "python3 -m venv ${OE_HOME}/odoo-${ODOO_VERSION}-venv"
+if [ ! -d "${OE_HOME}/odoo-${ODOO_VERSION}-venv" ]; then
+    log "🚀 Creating Python Virtual Environment..."
+    su - ${OE_USER} -c "python3 -m venv ${OE_HOME}/odoo-${ODOO_VERSION}-venv"
+    log "✅ Virtual Environment created successfully."
+else
+    log "⚠️ Virtual Environment already exists, skipping creation."
+fi
 VENV_PATH="${OE_HOME}/odoo-${ODOO_VERSION}-venv"
 VENV_PYTHON="${VENV_PATH}/bin/python3"
 VENV_PIP="${VENV_PATH}/bin/pip"
